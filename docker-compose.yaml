@@ -1,0 +1,46 @@
+---
+version: '3.4'
+services:
+  clab-launcher:
+    image: "ghcr.io/compunetinc/itnaw-local-clab:latest"
+    stop_signal: SIGINT
+    env_file: clab.env
+    environment:
+      - CLAB_START_PATH=${PWD}
+    networks:
+      itnaw:
+        ipv4_address: 172.20.0.254
+    privileged: true
+    pid: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /run/netns:/run/netns
+      - ${PWD}/clab-itnaw/:${PWD}/clab-itnaw/
+
+  k3s-launcher:
+    image: "ghcr.io/compunetinc/itnaw-local-k3s:latest"
+    stop_signal: SIGINT
+    networks:
+      itnaw:
+        ipv4_address: 172.20.0.253
+    privileged: true
+    pid: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /run/netns:/run/netns
+
+  hoppscotch:
+    image: "ghcr.io/compunetinc/itnaw-hoppscotch:latest"
+    networks:
+      itnaw:
+        ipv4_address: 172.20.0.101
+    ports:
+      - 8001:3000
+
+networks:
+  itnaw:
+    name: itnaw
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1

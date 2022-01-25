@@ -1,0 +1,6 @@
+# macos stuff
+.DS_Store
+*/.DS_Store
+
+# clab build dir
+clab-itnaw
